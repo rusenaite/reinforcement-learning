@@ -111,4 +111,4 @@ Ateitis priklauso tik nuo dabartinės būsenos – ne nuo praeities.
 
 ## Naudingos nuorodos
 - [ACM Reinforcement Learning Overview](https://dl.acm.org/doi/full/10.1145/3616864)
-
+- [Introduction to RL Course](https://towardsdatascience.com/reinforcement-learning-introduction-and-main-concepts-48ea997c850c/?source=post_page-----7ce2828a1fdb---------------------------------------)
