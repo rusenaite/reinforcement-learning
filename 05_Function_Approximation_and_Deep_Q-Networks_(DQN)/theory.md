@@ -1,144 +1,97 @@
-# Q-mokymasis ir SARSA Reinforcement Learning Metodai
+# Funkcijų aproksimacija ir gilieji Q tinklai (DQN)
 
-## Įžanga
-
-Q-mokymasis yra intuityvi, bet sudėtinga technika, priklausanti sustiprinto mokymosi (reinforcement learning) sričiai, kuri pati yra mašininio mokymosi pogrupis. Įsivaizduokime agentą, kaip smalsų vaiką žaidimų aikštelėje, kuris mokosi aplinkos per bandymus ir klaidas. Kiekvienas veiksmas turi pasekmes, o kiekvienas bandymas atskleidžia daugiau informacijos apie aplinką. Tai yra Q mokymosi esmė: jis įgalina agentą mokytis interaktyvioje aplinkoje, imantis veiksmų, stebint rezultatus ir pritaikant savo strategiją siekiant geresnių rezultatų ateityje.
-
-## Q-mokymosi pagrindai
-
-Šis metodas išsiskiria gebėjimu išmokti optimalius veiksmus be aplinkos modelio, o pasikliaujant atlygio sistema. Tai tarsi mokymasis spręsti labirintą užmerktomis akimis, vadovaujantis tik atsiliepimais iš sienų ir džiaugsmo šūksniais artėjant prie išėjimo. Ši grįžtamojo ryšio kilpa apima Q mokymosi algoritmų mokymosi kelionę.
-
-### Q lentelė
-
-Q-mokymosi esmė yra Q lentelė – kiekvienas įrašas parodo būsenos (s) ir veiksmo (a) derinį.
-
-Pradinė lentelė yra tuščia. Atnaujinimas vyksta naudojant formulę:
-
-```
-Q(s,a) ← Q(s,a) + α [R(s,a) + γ max_a Q(s',a) − Q(s,a)]
-```
-
-Kur:
-
-- **α** – mokymosi greitis
-- **γ** – nuolaidos veiksnys
-- **R(s,a)** – atlygis
-- **s'** – būsena po veiksmo
-
-### Tyrinėjimas ir išnaudojimas
-
-- **Tyrinėjimas** – naujų veiksmų išbandymas, kaip mokslininko eksperimentas.
-- **Išnaudojimas** – turimų žinių panaudojimas geriausiam sprendimui priimti.
-
-### Parametrai:
-
-- **Mokymosi greitis (α):** Kaip greitai agentas atnaujina Q reikšmes. Didelis α – greitesnis mokymasis, mažas – atsargesnis.
-- **Nuolaidų faktorius (γ):** Kaip svarbūs būsimi atlygiai. Didelis γ – ilgalaikė strategija, mažas – trumpalaikis pelnas.
-
-Atlygio sistema veikia kaip elgesio psichologijoje – apdovanojimai ir bausmės formuoja elgesį.
-
-## Q-learning vs SARSA
-
-### Q-learning
-
-Q-learning yra off-policy algoritmas, kuris mokosi pagal vertinimą, nepriklausomai nuo agento faktiškai atliktų veiksmų.
-
-#### Formulė:
-
-```
-Q(s,a) ← Q(s,a) + α [R(s,a) + γ max_a Q(s',a) − Q(s,a)]
-```
-
-#### Ypatybės:
-
-- **Off-policy:** Mokosi pagal vertinimą, nepriklausomai nuo politikos.
-- **Naudoja maksimalų Q vertinimą:** Atnaujina pagal optimalią strategiją.
-- **Gali pervertinti Q vertes.**
-
-### SARSA
-
-SARSA yra on-policy algoritmas, kuris mokosi pagal dabartinę politiką, naudodamas faktiškai atliktus veiksmus.
-
-#### Formulė:
-
-```
-Q(s,a) ← Q(s,a) + α [R(s,a) + γ Q(s',a') − Q(s,a)]
-```
-
-#### Ypatybės:
-
-- **On-policy:** Mokosi pagal realią strategiją.
-- **Naudoja veiksmą a', kurį agentas tikrai atliko.**
-- **Mažesnė rizika pervertinti Q reikšmes.**
-
-### Palyginimas:
-
-| Aspektas               | Q-mokymas (Off-policy)             | SARSA (On-policy)                     |
-| ---------------------- | ---------------------------------- | ------------------------------------- |
-| Politika               | Nepriklauso nuo politikos          | Remiasi politika                      |
-| Atnaujinimas           | Naudoja max Q(s', a)               | Naudoja Q(s', a')                     |
-| Tyrinėjimas            | Apsvarsto geriausią veiksmą        | Vadovaujasi faktiniais veiksmais      |
-| Konsolidacijos greitis | Greitesnis                         | Lėtesnis                              |
-| Stabilumas             | Mažesnis, linkęs į pervertinimą    | Didesnis, stabilesnis                 |
-| Tinkamumas             | Agresyvus tyrimas ir optimizavimas | Stabilumas ir politikos suderinamumas |
-| Suboptimalumo rizika   | Maža                               | Didesnė                               |
-
-## Funkcijų aproksimacija ir gilieji Q tinklai (DQN)
+## 💡 Teorinė dalis
 
 ### Funkcijų aproksimacija
 
-Kai būsenų erdvė yra labai didelė arba begalinė, Q-vertes tampa neįmanoma išlaikyti lentelėje. Funkcijų aproksimacija leidžia naudoti modelį, pvz., neuroninį tinklą, kuris apytiksliai apskaičiuoja Q-vertes.
+Funkcijų aproksimacija yra technika, naudojama stiprinamojo mokymosi (Reinforcement Learning, RL) kontekste, kai būsenų erdvė yra labai didelė arba net begalinė. Vietoje to, kad būtų kaupiamos visos būsenų-veiksmų poros Q reikšmės, naudojamas modelis (pvz., neuroninis tinklas), kuris apytiksliai apskaičiuoja šias vertes.
 
-### DQN (Deep Q-Network)
+---
 
-DQN sujungia gilųjį neuroninį tinklą su Q-mokymusi. Pagrindiniai komponentai:
+## 🧠 Deep Q-Networks (DQN)
 
-- **Neuroninis tinklas Q-vertėms:** Vietoje Q lentelės naudojamas tinklas.
-- **Atminties atstatymas (Experience Replay):** Agentas saugo ankstesnes patirtis ir jas vėliau naudoja mokymuisi.
-- **Tikslinis tinklas (Target Network):** Stabilumui pasiekti, naudojamas atskiras tinklas, kuris atnaujinamas periodiškai.
+### Kas yra DQN?
 
-### Double DQN
+DQN – tai gilusis Q-mokymosi metodas, kuris neuroniniu tinklu aproksimuojamos Q reikšmės, leidžiančios efektyviai veikti didelėse būsenų erdvėse. Šis metodas išpopuliarėjo po 2015 m. pasirodžiusio darbo, kuriame DQN pasiekė žmogaus lygio rezultatų žaidžiant Atari žaidimus.
 
-- **Problema:** DQN gali pervertinti Q reikšmes.
-- **Sprendimas:** Naudojami du tinklai – vienas veiksmo pasirinkimui, kitas vertinimui.
+### Pagrindiniai komponentai:
 
-Formulė:
+- **Q tinklas:** Naudoja neuroninį tinklą Q(s, a) prognozei.
+- **Patirties atkartojimas (Experience Replay):** Agentas saugo ankstesnius patyrimus ir mokosi iš jų atsitiktine tvarka, kad sumažintų sekos koreliaciją.
+- **Tikslinis tinklas (Target Network):** Atskiras tinklas, kuris atnaujinamas retai, kad užtikrintų stabilumą mokymo metu.
 
+---
+
+## 🔁 Double DQN
+
+### Problema:
+Klasikinis DQN pervertina Q reikšmes, nes tas pats tinklas naudojamas ir veiksmo parinkimui, ir įvertinimui.
+
+### Sprendimas:
+Double DQN naudoja du tinklus:
+- Vienas parenka geriausią veiksmą (`argmax`),
+- Kitas įvertina to veiksmo reikšmę naudodamas atskirus svorius (`θ⁻`).
+
+### Formulė:
 ```
-Q_double(st, at) = rt+1 + γ * Q_target(st+1, argmax_a' Q(st+1, a'; θ); θ−)
+Q(s, a) = r + γ * Q_target(s', argmax_a' Q(s', a'; θ), θ⁻)
 ```
 
-### Dueling DQN
+---
 
-- **Problema:** Ne visose būsenose visi veiksmai yra svarbūs.
-- **Sprendimas:** Išskaidoma į vertės funkciją V(s) ir advanto funkciją A(s,a).
+## 🧾 Dueling DQN
 
-Formulė:
+### Problema:
+Kai kuriose būsenose veiksmo pasirinkimas neturi didelės reikšmės, bet klasikinis DQN vis tiek modeliuoja visas Q reikšmes vienodai.
 
+### Sprendimas:
+Dueling DQN tinklo architektūra atskiria:
+- **V(s):** būsena vertė,
+- **A(s, a):** veiksmo pranašumas.
+
+### Formulė:
 ```
-Q(s,a) = V(s) + A(s,a) − max_a' A(s,a')
+Q(s, a) = V(s) + A(s, a) - max_a' A(s, a')
 ```
 
-### Apibendrinimas
+---
 
-- DQN leidžia naudoti gilųjį mokymąsi Q-vertėms.
-- Double DQN mažina pervertinimo riziką.
-- Dueling DQN padeda geriau įvertinti būsenos ir veiksmo svarbą.
+## 📍 Apibendrinimas
 
-## DQN panaudojimo atvejai
+- **DQN:** sprendžia didelių erdvių problemas naudodamas neuroninius tinklus.
+- **Double DQN:** sumažina Q reikšmių pervertinimą.
+- **Dueling DQN:** leidžia tinklui geriau įvertinti būsenas net kai veiksmo pasirinkimas nėra svarbus.
 
-1. **Žaidimai (Atari, Pong, Breakout):**
-2. **Autonominės transporto priemonės:**
-3. **Robotų valdymas:**
-4. **Finansų sprendimai:**
-5. **Sistemų ir tinklų optimizavimas:**
+---
 
-## Išvada
+## 🧪 Praktiniai DQN panaudojimo atvejai
 
-Q-mokymasis agresyviai ieško optimalios politikos, bet gali pervertinti Q reikšmes. SARSA laikosi dabartinės politikos, todėl yra stabilesnis ir saugesnis. DQN ir jo variantai – Double DQN, Dueling DQN – leidžia spręsti sudėtingas užduotis didelėse erdvėse. Pasirinkimas priklauso nuo tikslų – ar norima optimalaus elgesio bet kokia kaina, ar svarbiau stabilumas ir saugumas.
+### 1. Žaidimai (pvz., Atari)
+- **Breakout, Space Invaders, Pong, Ms. Pac-Man**
+- Agentas mokosi žaisti siekdamas maksimizuoti rezultatą.
 
-Pavyzdžiai ir straipsniai:
+### 2. Autonominės transporto priemonės
+- **Veiksmai:** vairavimas, stabdymas, sukimas
+- **Atlygis:** pasiektas tikslas, išvengtos kliūtys
 
-- [Kaggle – Solving MDP using TD Learning](https://www.kaggle.com/code/editama/solving-mdp-using-td-learning)
-- [Kaggle – Dueling Double DQN](https://www.kaggle.com/code/masurte/dueling-double-dqn)
-- [IEEE – Deep Reinforcement Learning Paper](https://ieeexplore.ieee.org/abstract/document/10854435)
+### 3. Robotų valdymas
+- **Užduotys:** objektų paėmimas, judėjimas
+- **Atlygis:** sėkmingas užduoties atlikimas
+
+### 4. Finansai
+- **Veiksmai:** pirkti, parduoti, laikyti
+- **Atlygis:** pelnas ar nuostolis
+
+### 5. Sistemų ir tinklų optimizavimas
+- **Būsena:** tinklo srautas, serverio apkrova
+- **Veiksmai:** resursų paskirstymas
+- **Atlygis:** optimizuota veikla
+
+---
+
+## 📚 Naudingi šaltiniai
+
+- [IEEE publikacija](https://ieeexplore.ieee.org/abstract/document/10854435)
+- Mnih et al., 2015 – "Human-level control through deep reinforcement learning"
+- Wang et al., 2016 – "Dueling Network Architectures for Deep Reinforcement Learning"
+- [Kaggle notebook: Dueling Double DQN](https://www.kaggle.com/code/masurte/dueling-double-dqn)
